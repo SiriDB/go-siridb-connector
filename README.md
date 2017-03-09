@@ -1,2 +1,2 @@
-# go-siridb
+# go-siridb-connector
 SiriDB Client for the go language
