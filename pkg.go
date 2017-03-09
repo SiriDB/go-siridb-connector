@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	qpack "github.com/transceptor.technology/go-qpack"
+	"github.com/transceptor-technology/go-qpack"
 )
 
 // Pkg contains of a header and data.

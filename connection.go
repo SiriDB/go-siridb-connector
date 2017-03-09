@@ -5,7 +5,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/transceptor.technology/go-qpack"
+	"github.com/transceptor-technology/go-qpack"
 )
 
 // Connection is a SiriDB Connection. Port should be the client port.
