@@ -9,7 +9,7 @@ type Host struct {
 }
 
 // NewHost return a pointer to a new host.
-func NewHost(host string, port uint16) *Host {
+func NewHost(host string, port uint16, logCh chan string) *Host {
 	h := Host{
 		conn:        NewConnection(host, port),
 		isBackup:    false,
@@ -17,6 +17,7 @@ func NewHost(host string, port uint16) *Host {
 		weight:      1,
 	}
 	h.conn.OnClose = h.onClose
+	h.conn.LogCh = logCh
 	return &h
 }
 

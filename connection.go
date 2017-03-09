@@ -16,6 +16,7 @@ type Connection struct {
 	buf     *Buffer
 	respMap map[uint16]chan *Pkg
 	OnClose func()
+	LogCh   chan string
 }
 
 // NewConnection creates a new connection connection
@@ -27,6 +28,7 @@ func NewConnection(host string, port uint16) *Connection {
 		buf:     NewBuffer(),
 		respMap: make(map[uint16]chan *Pkg),
 		OnClose: nil,
+		LogCh:   nil,
 	}
 }
 
@@ -58,32 +60,12 @@ func (conn *Connection) Connect(username, password, dbname string) error {
 		CprotoReqAuth,
 		[]string{username, password, dbname},
 		10)
-
 	return err
 }
 
 // IsConnected returns true when connected.
 func (conn *Connection) IsConnected() bool {
 	return conn.buf.conn != nil
-}
-
-func (conn *Connection) connect() error {
-	if conn.IsConnected() {
-		return nil
-	}
-
-	cn, err := net.Dial("tcp", conn.ToString())
-
-	if err != nil {
-		return fmt.Errorf("Dial error: %s", err)
-	}
-
-	conn.buf.conn = cn
-
-	go conn.buf.Read()
-	go conn.Listen()
-
-	return nil
 }
 
 // Query sends a query and returns the result.
@@ -158,14 +140,6 @@ func (conn *Connection) Send(tp uint8, data interface{}, timeout uint16) (interf
 	return result, err
 }
 
-func getErrorMsg(b []byte) string {
-	result, err := qpack.Unpack(b)
-	if err != nil {
-		return err.Error()
-	}
-	return result.(map[interface{}]interface{})["error_msg"].(string)
-}
-
 // Listen to data channels
 func (conn *Connection) Listen() {
 	for {
@@ -174,10 +148,10 @@ func (conn *Connection) Listen() {
 			if respCh, ok := conn.respMap[pkg.pid]; ok {
 				respCh <- pkg
 			} else {
-				fmt.Printf("no responce channel found for pid %d, probably the task has been cancelled ot timed out.", pkg.pid)
+				conn.sendLog("no responce channel found for pid %d, probably the task has been cancelled ot timed out.", pkg.pid)
 			}
 		case err := <-conn.buf.ErrCh:
-			fmt.Printf("%s\n", err)
+			conn.sendLog(err.Error())
 			conn.buf.conn.Close()
 			conn.buf.conn = nil
 			if conn.OnClose != nil {
@@ -190,7 +164,43 @@ func (conn *Connection) Listen() {
 // Close will close an open connection.
 func (conn *Connection) Close() {
 	if conn.buf.conn != nil {
-		fmt.Print("Close connection...")
+		conn.sendLog("Close connection...")
 		conn.buf.conn.Close()
 	}
+}
+
+func (conn *Connection) sendLog(s string, a ...interface{}) {
+	msg := fmt.Sprintf(s, a...)
+	if conn.LogCh == nil {
+		fmt.Println(msg)
+	} else {
+		conn.LogCh <- msg
+	}
+}
+
+func (conn *Connection) connect() error {
+	if conn.IsConnected() {
+		return nil
+	}
+
+	cn, err := net.Dial("tcp", conn.ToString())
+
+	if err != nil {
+		return fmt.Errorf("Dial error: %s", err)
+	}
+
+	conn.buf.conn = cn
+
+	go conn.buf.Read()
+	go conn.Listen()
+
+	return nil
+}
+
+func getErrorMsg(b []byte) string {
+	result, err := qpack.Unpack(b)
+	if err != nil {
+		return err.Error()
+	}
+	return result.(map[interface{}]interface{})["error_msg"].(string)
 }

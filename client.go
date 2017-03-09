@@ -11,12 +11,13 @@ const defaultPingInterval = 30
 
 // Client can be used to communicate with a SiriDB cluster.
 type Client struct {
+	PingInterval time.Duration
 	username     string
 	password     string
 	dbname       string
-	PingInterval time.Duration
 	hosts        []*Host
 	selector     []*Host
+	logCh        chan string
 }
 
 // NewClient returns a pointer to a new client object.
@@ -29,16 +30,17 @@ type Client struct {
 //								// will be used only when other hosts are not available
 // }
 //
-func NewClient(username, password, dbname string, hostlist [][]interface{}) *Client {
+func NewClient(username, password, dbname string, hostlist [][]interface{}, logCh chan string) *Client {
 	client := Client{
 		username:     username,
 		password:     password,
 		dbname:       dbname,
+		logCh:        logCh,
 		PingInterval: defaultPingInterval,
 	}
 
 	for _, v := range hostlist {
-		host := NewHost(v[0].(string), uint16(v[1].(int)))
+		host := NewHost(v[0].(string), uint16(v[1].(int)), logCh)
 
 		// read optional backup mode and weight
 		if len(v) == 3 {
@@ -49,7 +51,7 @@ func NewClient(username, password, dbname string, hostlist [][]interface{}) *Cli
 			case reflect.Int:
 				host.weight = v[2].(int)
 			default:
-				fmt.Printf("Unknown type: %s", t.Kind().String())
+				client.sendLog("Unknown type: %s", t.Kind().String())
 			}
 		}
 
@@ -70,35 +72,6 @@ func (client Client) Connect() {
 	ok := make(chan bool)
 	go client.ping(ok)
 	<-ok
-}
-
-func (client Client) ping(ok chan bool) {
-	firstLoop := true
-	for {
-		for _, host := range client.hosts {
-			if host.conn.IsConnected() {
-				_, err := host.conn.Send(CprotoReqPing, nil, 5)
-				if err != nil {
-					fmt.Printf("Ping failed: %s\n", err)
-					host.isAvailable = false
-				} else {
-					host.isAvailable = true
-				}
-			} else {
-				err := host.conn.Connect(client.username, client.password, client.dbname)
-				if err != nil {
-					fmt.Printf("%s\n", err)
-				} else {
-					host.isAvailable = true
-				}
-			}
-		}
-		if firstLoop {
-			firstLoop = false
-			ok <- true
-		}
-		time.Sleep(client.PingInterval * time.Second)
-	}
 }
 
 // IsConnected return true if at least one connection is connected
@@ -132,7 +105,7 @@ func (client Client) Query(query string, timeout uint16) (interface{}, error) {
 		}
 
 		if serr, ok := err.(*Error); ok && serr.Type() == CprotoErrServer {
-			fmt.Printf(
+			client.sendLog(
 				"Got a server error on %s: %s",
 				host.conn.ToString(),
 				serr.Error())
@@ -165,7 +138,7 @@ func (client Client) Insert(data interface{}, timeout uint16) (interface{}, erro
 		}
 
 		if serr, ok := err.(*Error); ok && serr.Type() == CprotoErrServer {
-			fmt.Printf(
+			client.sendLog(
 				"Got a server error on %s: %s",
 				host.conn.ToString(),
 				serr.Error())
@@ -210,4 +183,42 @@ func (client Client) pickHost(tryUnavailable bool) *Host {
 	}
 
 	return nil
+}
+
+func (client *Client) sendLog(s string, a ...interface{}) {
+	msg := fmt.Sprintf(s, a...)
+	if client.logCh == nil {
+		fmt.Println(msg)
+	} else {
+		client.logCh <- msg
+	}
+}
+
+func (client Client) ping(ok chan bool) {
+	firstLoop := true
+	for {
+		for _, host := range client.hosts {
+			if host.conn.IsConnected() {
+				_, err := host.conn.Send(CprotoReqPing, nil, 5)
+				if err != nil {
+					client.sendLog("Ping failed: %s", err)
+					host.isAvailable = false
+				} else {
+					host.isAvailable = true
+				}
+			} else {
+				err := host.conn.Connect(client.username, client.password, client.dbname)
+				if err != nil {
+					client.sendLog(err.Error())
+				} else {
+					host.isAvailable = true
+				}
+			}
+		}
+		if firstLoop {
+			firstLoop = false
+			ok <- true
+		}
+		time.Sleep(client.PingInterval * time.Second)
+	}
 }
