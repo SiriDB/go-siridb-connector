@@ -5,6 +5,7 @@ A SiriDB-Connector for the Go language
 ---------------------------------------
   * [Installation](#installation)
   * [Usage](#usage)
+  
 ---------------------------------------
 
 ## Installation
