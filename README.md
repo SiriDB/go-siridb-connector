@@ -1,4 +1,4 @@
-# Go-SiriDb-Connector
+# Go-SiriDB-Connector
 
 A SiriDB-Connector for the Go language
 
