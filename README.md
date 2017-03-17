@@ -6,6 +6,7 @@ A SiriDB-Connector for the Go language
   * [Installation](#installation)
   * [Usage](#usage)
     * [Single connection](#single-connection)
+    * [SiriDB client](#siridb-client)
   
 ---------------------------------------
 
@@ -66,6 +67,7 @@ func main() {
 	<-ok
 }
 ```
+### SiriDB client
 And one example for using the client. A client can be used for connecting to multiple siridb servers. Queries will
 then send to a random connection. When a connection is lost, it will retry to setup the connection each 30 seconds.
 ```
