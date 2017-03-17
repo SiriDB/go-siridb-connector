@@ -20,6 +20,7 @@ Make sure [Git is installed](https://git-scm.com/downloads) on your machine and 
 _Go SiriDB Connector_ can be used to communicate with a single SiriDB server and a more advanced client is provided which can connect to multiple SiriDB servers so queries and inserts are balanced.
 
 ### Single connection
+This is some example code for how to use the Go-SiriDB-Connector as a single connection.
 ```go
 package main
 
