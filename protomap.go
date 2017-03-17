@@ -30,6 +30,9 @@ const CprotoReqFileUsers = 8
 // CprotoReqFileGroups for requesting a groups.dat file
 const CprotoReqFileGroups = 9
 
+//CprotoReqAdmin for a manage server request
+const CprotoReqAdmin = 32
+
 // CprotoResQuery on query response
 const CprotoResQuery = 0
 
@@ -47,6 +50,9 @@ const CprotoResInfo = 4
 
 // CprotoResFile on request file response
 const CprotoResFile = 5
+
+//CprotoSuccessAdmin on succesful manage server request
+const CprotoSuccessAdmin = 32
 
 // CprotoErrMsg general error
 const CprotoErrMsg = 64
@@ -83,3 +89,18 @@ const CprotoErrLoadingDb = 74
 
 // CprotoErrFile on server error
 const CprotoErrFile = 75
+
+// CprotoErrAdmin on manage server error with message
+const CprotoErrAdmin = 96
+
+// CprotoErrAdminInvalidRequest on invalid manage server request
+const CprotoErrAdminInvalidRequest = 97
+
+// AdminNewAccount for create a new manage server account
+const AdminNewAccount = 0
+
+// AdminChangePassword for changing a server account password
+const AdminChangePassword = 1
+
+// AdminDropAccount for dropping a server account
+const AdminDropAccount = 2

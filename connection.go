@@ -48,6 +48,17 @@ func (conn *Connection) Info() (interface{}, error) {
 	return conn.Send(CprotoReqInfo, nil, 10)
 }
 
+// Manage send a manage server request.
+func (conn *Connection) Manage(username, password string, tp int, options map[string]interface{}) (interface{}, error) {
+	err := conn.connect()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return conn.Send(CprotoReqAdmin, []interface{}{username, password, tp, options}, 10)
+}
+
 // Connect to a SiriDB connection.
 func (conn *Connection) Connect(username, password, dbname string) error {
 	err := conn.connect()
@@ -110,12 +121,14 @@ func (conn *Connection) Send(tp uint8, data interface{}, timeout uint16) (interf
 		switch pkg.tp {
 		case CprotoResQuery, CprotoResInsert, CprotoResInfo:
 			result, err = qpack.Unpack(pkg.data)
-		case CprotoResAuthSuccess, CprotoResAck:
+		case CprotoResAuthSuccess, CprotoResAck, CprotoSuccessAdmin:
 			result = true
 		case CprotoResFile:
 			result = pkg.data
-		case CprotoErrMsg, CprotoErrUserAccess, CprotoErrPool, CprotoErrServer, CprotoErrQuery, CprotoErrInsert:
+		case CprotoErrMsg, CprotoErrUserAccess, CprotoErrPool, CprotoErrServer, CprotoErrQuery, CprotoErrInsert, CprotoErrAdmin:
 			err = NewError(getErrorMsg(pkg.data), pkg.tp)
+		case CprotoErrAdminInvalidRequest:
+			err = NewError("invalid request", pkg.tp)
 		case CprotoErr:
 			err = NewError("runtime error", pkg.tp)
 		case CprotoErrNotAuthenticated:
