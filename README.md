@@ -66,3 +66,54 @@ func main() {
 	<-ok
 }
 ```
+And one example for using the client. A client can be used for connecting to multiple siridb servers. Queries will
+then send to a random connection. When a connection is lost, it will retry to setup the connection each 30 seconds.
+```
+package main
+
+import (
+	"fmt"
+
+	"github.com/transceptor-technology/go-siridb-connector"
+)
+
+func example(client *siridb.Client, ok chan bool) {
+	// make sure the connection will be closed
+	defer client.Close()
+
+	client.Connect()
+
+	// IsConnected() returns true if at least one server is connected.
+	// Failed connections will retry creating a connection each 30 seconds.
+	if client.IsConnected() {
+		if res, err := client.Query("list series", 2); err == nil {
+			fmt.Printf("Query result: %s\n", res)
+		}
+	} else {
+		fmt.Println("not even a single server is connected...")
+	}
+
+	// send to the channel
+	ok <- true
+}
+
+func main() {
+	// create a new client
+	client := siridb.NewClient(
+		"iris",   // username
+		"siri",   // password
+		"dbtest", // database
+		[][]interface{}{{"localhost", 9000}}, // siridb server(s)
+		nil, // optional log channel
+	)
+
+	// create a channel
+	ok := make(chan bool)
+
+	// run the example
+	go example(client, ok)
+
+	// wait for the channel
+	<-ok
+}
+```
