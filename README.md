@@ -104,7 +104,10 @@ func main() {
 		"iris",   // username
 		"siri",   // password
 		"dbtest", // database
-		[][]interface{}{{"localhost", 9000}}, // siridb server(s)
+		[][]interface{}{
+			{"server1", 9000},
+			{"server2", 9000},
+		}, // siridb server(s)
 		nil, // optional log channel
 	)
 
