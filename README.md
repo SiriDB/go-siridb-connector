@@ -147,5 +147,11 @@ conn.LogCh = logCh // setup log channel
 ```
 The `Client` simple accepts the channel as argument. For example:
 ```go
-client := siridb.NewClient("user", "password", "database", [][]interface{}{...}, logCh) // logCh is allowed to be nil for logging to the standard output
+client := siridb.NewClient(
+	"user", 
+	"password", 
+	"database", 
+	[][]interface{}{...}, // array of servers, see SiriDB client for more info
+	logCh, // logCh is allowed to be nil for logging to the standard output
+)
 ```
