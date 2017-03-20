@@ -123,7 +123,7 @@ func main() {
 }
 ```
 ### Logging
-Both a `Connection` and a `Client` can send logging to the standard output or to a channel for custom log handling.
+Both a `Connection` and a `Client` can send logging to the standard output *or* to a channel for custom log handling.
 
 For example you could create you own log handler like this:
 ```go
