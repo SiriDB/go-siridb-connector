@@ -7,6 +7,7 @@ A SiriDB-Connector for the Go language
   * [Usage](#usage)
     * [Single connection](#single-connection)
     * [SiriDB client](#siridb-client)
+    * [Logging](#logging)
   
 ---------------------------------------
 
@@ -120,4 +121,31 @@ func main() {
 	// wait for the channel
 	<-ok
 }
+```
+### Logging
+Both a `Connection` and a `Client` can send logging to the standard output or to a channel for custom log handling.
+
+For example you could create you own log handler like this:
+```go
+func printLogs(logCh chan string) {
+	for {
+		msg := <-logCh
+		fmt.Printf("Log: %s\n", msg)
+	}
+}
+```
+And set-up the channel like this:
+```go
+logCh := make(chan string)
+go printLogs(logCh)
+```
+
+If you plan to use the log channel with a `Connection` you should use the `.LogCh` property. For example:
+```go
+conn := siridb.NewConnection(...) // create a new connection
+conn.LogCh = logCh // setup log channel
+```
+The `Client` simple accepts the channel as argument. For example:
+```go
+client := siridb.NewClient("user", "password", "database", [][]interface{}{...}, logCh) // logCh is allowed to be nil for logging to the standard output
 ```
