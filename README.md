@@ -143,7 +143,7 @@ go printLogs(logCh)
 If you plan to use the log channel with a `Connection` you should use the `.LogCh` property. For example:
 ```go
 conn := siridb.NewConnection(...) // create a new connection
-conn.LogCh = logCh // setup log channel
+conn.LogCh = logCh // set-up custom log channel
 ```
 The `Client` simple accepts the channel as argument. For example:
 ```go
