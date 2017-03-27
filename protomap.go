@@ -51,8 +51,11 @@ const CprotoResInfo = 4
 // CprotoResFile on request file response
 const CprotoResFile = 5
 
-//CprotoSuccessAdmin on succesful manage server request
-const CprotoSuccessAdmin = 32
+//CprotoAckAdmin on succesful manage server request
+const CprotoAckAdmin = 32
+
+//CprotoAckAdminData on succesful manage server request with data
+const CprotoAckAdminData = 33
 
 // CprotoErrMsg general error
 const CprotoErrMsg = 64
@@ -104,3 +107,21 @@ const AdminChangePassword = 1
 
 // AdminDropAccount for dropping a server account
 const AdminDropAccount = 2
+
+// AdminNewDatabase for creating a new database
+const AdminNewDatabase = 3
+
+// AdminNewPool for expanding a database with a new pool
+const AdminNewPool = 4
+
+// AdminNewReplica for expanding a database with a new replica
+const AdminNewReplica = 5
+
+// AdminGetVersion for getting the siridb server version
+const AdminGetVersion = 64
+
+// AdminGetAccounts for getting all accounts on a siridb server
+const AdminGetAccounts = 65
+
+// AdminGetDatabases for getting all database running on a siridb server
+const AdminGetDatabases = 66

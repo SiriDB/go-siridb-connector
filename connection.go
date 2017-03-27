@@ -56,7 +56,7 @@ func (conn *Connection) Manage(username, password string, tp int, options map[st
 		return nil, err
 	}
 
-	return conn.Send(CprotoReqAdmin, []interface{}{username, password, tp, options}, 10)
+	return conn.Send(CprotoReqAdmin, []interface{}{username, password, tp, options}, 60)
 }
 
 // Connect to a SiriDB connection.
@@ -119,9 +119,9 @@ func (conn *Connection) Send(tp uint8, data interface{}, timeout uint16) (interf
 	select {
 	case pkg := <-respCh:
 		switch pkg.tp {
-		case CprotoResQuery, CprotoResInsert, CprotoResInfo:
+		case CprotoResQuery, CprotoResInsert, CprotoResInfo, CprotoAckAdminData:
 			result, err = qpack.Unpack(pkg.data)
-		case CprotoResAuthSuccess, CprotoResAck, CprotoSuccessAdmin:
+		case CprotoResAuthSuccess, CprotoResAck, CprotoAckAdmin:
 			result = true
 		case CprotoResFile:
 			result = pkg.data
