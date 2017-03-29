@@ -177,7 +177,7 @@ func (conn *Connection) Listen() {
 // Close will close an open connection.
 func (conn *Connection) Close() {
 	if conn.buf.conn != nil {
-		conn.sendLog("Close connection...")
+		conn.sendLog("Closing connection to %s:%d", conn.host, conn.port)
 		conn.buf.conn.Close()
 	}
 }
@@ -199,9 +199,10 @@ func (conn *Connection) connect() error {
 	cn, err := net.Dial("tcp", conn.ToString())
 
 	if err != nil {
-		return fmt.Errorf("Dial error: %s", err)
+		return err
 	}
 
+	conn.sendLog("Connected to %s:%d", conn.host, conn.port)
 	conn.buf.conn = cn
 
 	go conn.buf.Read()
