@@ -1,5 +1,8 @@
 # Go-SiriDB-Connector
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/transceptor-technology/go-siridb-connector)](https://goreportcard.com/report/github.com/transceptor-technology/go-siridb-connector)
+[![GoDoc](https://godoc.org/github.com/trnasceptor-technology/go-siridb-connector?status.svg)](https://godoc.org/github.com/trnasceptor-technology/go-siridb-connector)
+
 A SiriDB-Connector for the Go language
 
 ---------------------------------------
