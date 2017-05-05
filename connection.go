@@ -3,6 +3,7 @@ package siridb
 import (
 	"fmt"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/transceptor-technology/go-qpack"
@@ -34,6 +35,9 @@ func NewConnection(host string, port uint16) *Connection {
 
 // ToString returns a string representing the connection and port.
 func (conn *Connection) ToString() string {
+	if strings.Count(conn.host, ":") > 0 {
+		return fmt.Sprintf("[%s]:%d", conn.host, conn.port)
+	}
 	return fmt.Sprintf("%s:%d", conn.host, conn.port)
 }
 
