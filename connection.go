@@ -89,32 +89,9 @@ func (conn *Connection) Insert(data interface{}, timeout uint16) (interface{}, e
 	return conn.Send(CprotoReqInsert, data, timeout)
 }
 
-// Send is used to send bytes
-func (conn *Connection) Send(tp uint8, data interface{}, timeout uint16) (interface{}, error) {
-	pid := conn.pid
-
-	b, err := pack(pid, tp, data)
-
-	if err != nil {
-		return nil, err
-	}
-
-	respCh := make(chan *Pkg, 1)
-
-	conn.respMap[pid] = respCh
-
-	conn.pid++
-
-	conn.buf.conn.Write(b)
-
-	timeoutCh := make(chan bool, 1)
-
-	go func() {
-		time.Sleep(time.Duration(timeout) * time.Second)
-		timeoutCh <- true
-	}()
-
+func getResult(respCh chan *Pkg, timeoutCh chan bool) (interface{}, error) {
 	var result interface{}
+	var err error
 
 	select {
 	case pkg := <-respCh:
@@ -148,6 +125,36 @@ func (conn *Connection) Send(tp uint8, data interface{}, timeout uint16) (interf
 		err = fmt.Errorf("Query timeout reached")
 	}
 
+	return result, err
+}
+
+// Send is used to send bytes
+func (conn *Connection) Send(tp uint8, data interface{}, timeout uint16) (interface{}, error) {
+	pid := conn.pid
+
+	b, err := pack(pid, tp, data)
+
+	if err != nil {
+		return nil, err
+	}
+
+	respCh := make(chan *Pkg, 1)
+
+	conn.respMap[pid] = respCh
+
+	conn.pid++
+
+	conn.buf.conn.Write(b)
+
+	timeoutCh := make(chan bool, 1)
+
+	go func() {
+		time.Sleep(time.Duration(timeout) * time.Second)
+		timeoutCh <- true
+	}()
+
+	result, err := getResult(respCh, timeoutCh)
+
 	delete(conn.respMap, pid)
 
 	return result, err
@@ -161,7 +168,7 @@ func (conn *Connection) Listen() {
 			if respCh, ok := conn.respMap[pkg.pid]; ok {
 				respCh <- pkg
 			} else {
-				conn.sendLog("no responce channel found for pid %d, probably the task has been cancelled ot timed out.", pkg.pid)
+				conn.sendLog("no response channel found for pid %d, probably the task has been cancelled ot timed out.", pkg.pid)
 			}
 		case err := <-conn.buf.ErrCh:
 			conn.sendLog(err.Error())

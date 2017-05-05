@@ -51,10 +51,10 @@ const CprotoResInfo = 4
 // CprotoResFile on request file response
 const CprotoResFile = 5
 
-//CprotoAckAdmin on succesful manage server request
+//CprotoAckAdmin on successful manage server request
 const CprotoAckAdmin = 32
 
-//CprotoAckAdminData on succesful manage server request with data
+//CprotoAckAdminData on successful manage server request with data
 const CprotoAckAdminData = 33
 
 // CprotoErrMsg general error
