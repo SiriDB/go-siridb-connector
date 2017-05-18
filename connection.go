@@ -227,5 +227,5 @@ func getErrorMsg(b []byte) string {
 	if err != nil {
 		return err.Error()
 	}
-	return result.(map[interface{}]interface{})["error_msg"].(string)
+	return result.(map[string]interface{})["error_msg"].(string)
 }
