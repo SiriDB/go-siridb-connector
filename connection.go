@@ -101,7 +101,7 @@ func getResult(respCh chan *Pkg, timeoutCh chan bool) (interface{}, error) {
 	case pkg := <-respCh:
 		switch pkg.tp {
 		case CprotoResQuery, CprotoResInsert, CprotoResInfo, CprotoAckAdminData:
-			result, err = qpack.Unpack(pkg.data)
+			result, err = qpack.Unpack(pkg.data, qpack.QpFlagStringKeysOnly)
 		case CprotoResAuthSuccess, CprotoResAck, CprotoAckAdmin:
 			result = true
 		case CprotoResFile:
@@ -223,7 +223,7 @@ func (conn *Connection) connect() error {
 }
 
 func getErrorMsg(b []byte) string {
-	result, err := qpack.Unpack(b)
+	result, err := qpack.Unpack(b, qpack.QpFlagStringKeysOnly)
 	if err != nil {
 		return err.Error()
 	}
