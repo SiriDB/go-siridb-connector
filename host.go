@@ -21,6 +21,6 @@ func NewHost(host string, port uint16, logCh chan string) *Host {
 	return &h
 }
 
-func (host Host) onClose() {
+func (host *Host) onClose() {
 	host.isAvailable = false
 }
