@@ -84,6 +84,16 @@ func (client Client) IsConnected() bool {
 	return false
 }
 
+// IsAvailable return true if at least one connection is connected
+func (client Client) IsAvailable() bool {
+	for _, host := range client.hosts {
+		if host.isAvailable {
+			return true
+		}
+	}
+	return false
+}
+
 // Query a SiriDB database.
 func (client Client) Query(query string, timeout uint16) (interface{}, error) {
 	firstTry := true
