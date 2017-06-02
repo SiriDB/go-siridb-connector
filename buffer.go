@@ -60,6 +60,8 @@ func (buffer Buffer) Read() {
 				break
 			}
 
+			buffer.pkg.Data(buffer.buf)
+
 			buffer.DataCh <- buffer.pkg
 
 			buffer.buf = buffer.buf[total:]

@@ -28,8 +28,13 @@ func NewPkg(b []byte) (*Pkg, error) {
 		size: binary.LittleEndian.Uint32(b),
 		pid:  binary.LittleEndian.Uint16(b[4:]),
 		tp:   tp,
-		data: b[8:],
+		data: nil,
 	}, nil
+}
+
+// Data sets package data
+func (p *Pkg) Data(b *[]byte) {
+	p.data = (*b)[8:]
 }
 
 // pack returns a byte array containing a header with serialized data.
