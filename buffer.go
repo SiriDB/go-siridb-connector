@@ -60,7 +60,7 @@ func (buffer Buffer) Read() {
 				break
 			}
 
-			buffer.pkg.Data(buffer.buf)
+			buffer.pkg.Data(&buffer.buf)
 
 			buffer.DataCh <- buffer.pkg
 
