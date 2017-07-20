@@ -33,8 +33,8 @@ func NewPkg(b []byte) (*Pkg, error) {
 }
 
 // Data sets package data
-func (p *Pkg) Data(b *[]byte) {
-	p.data = (*b)[8:]
+func (p *Pkg) Data(b *[]byte, size uint32) {
+	p.data = (*b)[8:size]
 }
 
 // pack returns a byte array containing a header with serialized data.
