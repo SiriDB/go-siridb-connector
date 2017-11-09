@@ -180,9 +180,12 @@ func (conn *Connection) Listen() {
 	for {
 		select {
 		case pkg := <-conn.buf.DataCh:
+			conn.mux.Lock()
 			if respCh, ok := conn.respMap[pkg.pid]; ok {
+				conn.mux.Unlock()
 				respCh <- pkg
 			} else {
+				conn.mux.Unlock()
 				conn.sendLog("no response channel found for pid %d, probably the task has been cancelled ot timed out.", pkg.pid)
 			}
 		case err := <-conn.buf.ErrCh:
