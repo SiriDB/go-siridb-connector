@@ -5,8 +5,8 @@ import (
 	"io"
 	"net"
 	"strings"
-	"time"
 	"sync"
+	"time"
 
 	"github.com/transceptor-technology/go-qpack"
 )
@@ -20,7 +20,7 @@ type Connection struct {
 	respMap map[uint16]chan *Pkg
 	OnClose func()
 	LogCh   chan string
-	mux 	sync.Mutex
+	mux     sync.Mutex
 }
 
 // NewConnection creates a new connection connection
@@ -149,7 +149,7 @@ func (conn *Connection) Send(tp uint8, data interface{}, timeout uint16) (interf
 	conn.respMap[pid] = respCh
 	conn.pid++
 	conn.mux.Unlock()
-	
+
 	conn.buf.conn.Write(b)
 
 	timeoutCh := make(chan bool, 1)
@@ -164,7 +164,7 @@ func (conn *Connection) Send(tp uint8, data interface{}, timeout uint16) (interf
 	conn.mux.Lock()
 	delete(conn.respMap, pid)
 	conn.mux.Unlock()
-	
+
 	return result, err
 }
 
