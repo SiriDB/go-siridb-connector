@@ -1,4 +1,4 @@
 package siridb
 
 // AppVersion exposes version information
-const AppVersion = "1.0.6"
+const AppVersion = "1.0.7"
