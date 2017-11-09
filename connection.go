@@ -2,6 +2,7 @@ package siridb
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"strings"
 	"time"
@@ -164,6 +165,13 @@ func (conn *Connection) Send(tp uint8, data interface{}, timeout uint16) (interf
 	return result, err
 }
 
+func niceErr(err error) string {
+	if err == io.EOF {
+		return "connection lost"
+	}
+	return err.Error()
+}
+
 // Listen to data channels
 func (conn *Connection) Listen() {
 	for {
@@ -175,7 +183,7 @@ func (conn *Connection) Listen() {
 				conn.sendLog("no response channel found for pid %d, probably the task has been cancelled ot timed out.", pkg.pid)
 			}
 		case err := <-conn.buf.ErrCh:
-			conn.sendLog(err.Error())
+			conn.sendLog("%s (%s:%d)", niceErr(err), conn.host, conn.port)
 			conn.buf.conn.Close()
 			conn.buf.conn = nil
 			if conn.OnClose != nil {
@@ -188,7 +196,7 @@ func (conn *Connection) Listen() {
 // Close will close an open connection.
 func (conn *Connection) Close() {
 	if conn.buf.conn != nil {
-		conn.sendLog("Closing connection to %s:%d", conn.host, conn.port)
+		conn.sendLog("closing connection to %s:%d", conn.host, conn.port)
 		conn.buf.conn.Close()
 	}
 }
@@ -213,7 +221,7 @@ func (conn *Connection) connect() error {
 		return err
 	}
 
-	conn.sendLog("Connected to %s:%d", conn.host, conn.port)
+	conn.sendLog("connected to %s:%d", conn.host, conn.port)
 	conn.buf.conn = cn
 
 	go conn.buf.Read()

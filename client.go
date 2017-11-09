@@ -51,7 +51,7 @@ func NewClient(username, password, dbname string, hostlist [][]interface{}, logC
 			case reflect.Int:
 				host.weight = v[2].(int)
 			default:
-				client.sendLog("Unknown type: %s", t.Kind().String())
+				client.sendLog("unknown type: %s", t.Kind().String())
 			}
 		}
 
@@ -116,7 +116,7 @@ func (client Client) Query(query string, timeout uint16) (interface{}, error) {
 
 		if serr, ok := err.(*Error); ok && serr.Type() == CprotoErrServer {
 			client.sendLog(
-				"Got a server error on %s: %s",
+				"got a server error on %s: %s",
 				host.conn.ToString(),
 				serr.Error())
 			host.isAvailable = false
@@ -149,7 +149,7 @@ func (client Client) Insert(data interface{}, timeout uint16) (interface{}, erro
 
 		if serr, ok := err.(*Error); ok && serr.Type() == CprotoErrServer {
 			client.sendLog(
-				"Got a server error on %s: %s",
+				"got a server error on %s: %s",
 				host.conn.ToString(),
 				serr.Error())
 			host.isAvailable = false
@@ -211,16 +211,19 @@ func (client Client) ping(ok chan bool) {
 			if host.conn.IsConnected() {
 				_, err := host.conn.Send(CprotoReqPing, nil, 5)
 				if err != nil {
-					client.sendLog("Ping failed: %s", err)
+					client.sendLog("ping failed: %s", err)
 					host.isAvailable = false
 				} else {
+					client.sendLog("ping! (%s:%d)", host.conn.host, host.conn.port)
 					host.isAvailable = true
 				}
 			} else {
 				err := host.conn.Connect(client.username, client.password, client.dbname)
 				if err != nil {
 					client.sendLog(err.Error())
+					host.conn.Close()
 				} else {
+					client.sendLog("authenticated to %s:%d", host.conn.host, host.conn.port)
 					host.isAvailable = true
 				}
 			}
