@@ -1,7 +1,7 @@
 # Go-SiriDB-Connector
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/transceptor-technology/go-siridb-connector)](https://goreportcard.com/report/github.com/transceptor-technology/go-siridb-connector)
-[![GoDoc](https://godoc.org/github.com/transceptor-technology/go-siridb-connector?status.svg)](https://godoc.org/github.com/transceptor-technology/go-siridb-connector)
+[![Go Report Card](https://goreportcard.com/badge/github.com/SiriDB/go-siridb-connector)](https://goreportcard.com/report/github.com/SiriDB/go-siridb-connector)
+[![GoDoc](https://godoc.org/github.com/SiriDB/go-siridb-connector?status.svg)](https://godoc.org/github.com/SiriDB/go-siridb-connector)
 
 A SiriDB-Connector for the Go language
 
@@ -17,7 +17,7 @@ A SiriDB-Connector for the Go language
 ## Installation
 Simple install the package to your [$GOPATH](https://github.com/golang/go/wiki/GOPATH "GOPATH") with the [go tool](https://golang.org/cmd/go/ "go command") from shell:
 ```bash
-$ go get github.com/transceptor-technology/go-siridb-connector
+$ go get github.com/SiriDB/go-siridb-connector
 ```
 Make sure [Git is installed](https://git-scm.com/downloads) on your machine and in your system's `PATH`.
 
@@ -32,7 +32,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/transceptor-technology/go-siridb-connector"
+	"github.com/SiriDB/go-siridb-connector"
 )
 
 func example(conn *siridb.Connection, ok chan bool) {
@@ -79,7 +79,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/transceptor-technology/go-siridb-connector"
+	"github.com/SiriDB/go-siridb-connector"
 )
 
 func example(client *siridb.Client, ok chan bool) {
