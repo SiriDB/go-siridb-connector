@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"reflect"
 	"time"
+
+	qpack "github.com/transceptor-technology/go-qpack"
 )
 
 const defaultPingInterval = 30
@@ -129,6 +131,21 @@ func (client Client) Query(query string, timeout uint16) (interface{}, error) {
 
 // Insert data into a SiriDB database.
 func (client Client) Insert(data interface{}, timeout uint16) (interface{}, error) {
+	var err error
+	var dataBin []byte
+
+	if data != nil {
+		dataBin, err = qpack.Pack(data)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return client.InsertBin(dataBin, timeout)
+
+}
+
+// Insert binary data into a SiriDB database.
+func (client Client) InsertBin(data []byte, timeout uint16) (interface{}, error) {
 	firstTry := true
 	for {
 		host := client.pickHost(false)
@@ -139,7 +156,7 @@ func (client Client) Insert(data interface{}, timeout uint16) (interface{}, erro
 		}
 
 		if host == nil {
-			return nil, fmt.Errorf("no available conections found")
+			return nil, fmt.Errorf("no available connections found")
 		}
 
 		res, err := host.conn.Insert(data, timeout)
