@@ -117,6 +117,9 @@ const AdminNewPool = 4
 // AdminNewReplica for expanding a database with a new replica
 const AdminNewReplica = 5
 
+// AdminDropDatabase for dropping a database
+const AdminDropDatabase = 6
+
 // AdminGetVersion for getting the siridb server version
 const AdminGetVersion = 64
 
