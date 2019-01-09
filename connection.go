@@ -91,8 +91,13 @@ func (conn *Connection) Query(query string, timeout uint16) (interface{}, error)
 	return conn.Send(CprotoReqQuery, []interface{}{query, nil}, timeout)
 }
 
+// Insert sends data to a SiriDB database.
+func (conn *Connection) Insert(data interface{}, timeout uint16) (interface{}, error) {
+	return conn.Send(CprotoReqInsert, data, timeout)
+}
+
 // Insert sends binary data to a SiriDB database.
-func (conn *Connection) Insert(data []byte, timeout uint16) (interface{}, error) {
+func (conn *Connection) InsertBin(data []byte, timeout uint16) (interface{}, error) {
 	return conn.SendBin(CprotoReqInsert, data, timeout)
 }
 
