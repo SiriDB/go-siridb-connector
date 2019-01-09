@@ -49,6 +49,12 @@ func pack(pid uint16, tp uint8, v interface{}) ([]byte, error) {
 		}
 	}
 
+	return packBin(pid, tp, data)
+}
+
+// packbin
+func packBin(pid uint16, tp uint8, data []byte) ([]byte, error) {
+
 	// create pkg with final size.
 	pkg := make([]byte, 8+len(data))
 
