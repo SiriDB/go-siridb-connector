@@ -47,6 +47,7 @@ func example(conn *siridb.Connection, ok chan bool) {
 	options["duration_num"] = "1w"
 	options["duration_log"] = "1d"
 
+	// using the default service account 'sa' and password 'siri'
 	if res, err := conn.Manage("sa", "siri", siridb.AdminNewDatabase, options); err == nil {
 		fmt.Printf("Manage result: %v\n", res)
 	}
