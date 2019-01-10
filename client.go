@@ -159,7 +159,7 @@ func (client Client) InsertBin(data []byte, timeout uint16) (interface{}, error)
 			return nil, fmt.Errorf("no available connections found")
 		}
 
-		res, err := host.conn.Insert(data, timeout)
+		res, err := host.conn.InsertBin(data, timeout)
 		if err == nil {
 			return res, err
 		}
