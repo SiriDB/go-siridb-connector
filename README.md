@@ -11,7 +11,7 @@ A SiriDB-Connector for the Go language
     * [Single connection](#single-connection)
     * [SiriDB client](#siridb-client)
     * [Logging](#logging)
-  
+
 ---------------------------------------
 
 ## Installation
@@ -39,13 +39,37 @@ func example(conn *siridb.Connection, ok chan bool) {
 	// make sure the connection will be closed
 	defer conn.Close()
 
+	// create a new database with the following configuration
+	options := make(map[string]interface{})
+	options["dbname"] = "dbtest"
+	options["time_precision"] = "s"
+	options["buffer_size"] = 1024
+	options["duration_num"] = "1w"
+	options["duration_log"] = "1d"
+
+	// using the default service account 'sa' and password 'siri'
+	if res, err := conn.Manage("sa", "siri", siridb.AdminNewDatabase, options); err == nil {
+		fmt.Printf("Manage result: %v\n", res)
+	}
+
 	// connect to database 'dbtest' using user 'iris' and password 'siri'
 	// this is an example but usually you should do some error handling...
 	if err := conn.Connect("iris", "siri", "dbtest"); err == nil {
 
+		seriename := "serie-001"
+		timestamp := 1471254705
+		value := 1.5
+		serie := make(map[string][][]interface{})
+		serie[seriename] = [][]interface{}{{timestamp, value}}
+
+		// insert data
+		if res, err := conn.Insert(serie, 10); err == nil {
+			fmt.Printf("Insert result: %s\n", res)
+		}
+
 		// perform a query
-		if res, err := conn.Query("list series", 10); err == nil {
-			fmt.Printf("Query result: %s\n", res)
+		if res, err := conn.Query("select * from *", 10); err == nil {
+			fmt.Printf("Query result: %v\n", res)
 		}
 	}
 
@@ -70,6 +94,7 @@ func main() {
 	// wait for the channel
 	<-ok
 }
+
 ```
 ### SiriDB client
 And one example for using the client. A client can be used for connecting to multiple siridb servers. Queries and inserts will be send to a random siridb server. When a connection is lost, it will retry to setup the connection each 30 seconds.
@@ -151,9 +176,9 @@ conn.LogCh = logCh // set-up custom log channel
 The `Client` simple accepts the channel as argument. For example:
 ```go
 client := siridb.NewClient(
-	"user", 
-	"password", 
-	"database", 
+	"user",
+	"password",
+	"database",
 	[][]interface{}{...}, // array of servers, see SiriDB client for more info
 	logCh, // logCh is allowed to be nil for logging to the standard output
 )
