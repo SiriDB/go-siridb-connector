@@ -3,6 +3,7 @@ package siridb
 import (
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"strings"
 	"sync"
@@ -240,7 +241,7 @@ func (conn *Connection) Close() {
 func (conn *Connection) sendLog(s string, a ...interface{}) {
 	msg := fmt.Sprintf(s, a...)
 	if conn.LogCh == nil {
-		fmt.Println(msg)
+		log.Println(msg)
 	} else {
 		conn.LogCh <- msg
 	}

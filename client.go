@@ -2,6 +2,7 @@ package siridb
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"reflect"
 	"time"
@@ -215,7 +216,7 @@ func (client Client) pickHost(tryUnavailable bool) *Host {
 func (client *Client) sendLog(s string, a ...interface{}) {
 	msg := fmt.Sprintf(s, a...)
 	if client.logCh == nil {
-		fmt.Println(msg)
+		log.Println(msg)
 	} else {
 		client.logCh <- msg
 	}
