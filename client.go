@@ -145,7 +145,7 @@ func (client Client) Insert(data interface{}, timeout uint16) (interface{}, erro
 
 }
 
-// Insert binary data into a SiriDB database.
+// InsertBin binary data into a SiriDB database.
 func (client Client) InsertBin(data []byte, timeout uint16) (interface{}, error) {
 	firstTry := true
 	for {

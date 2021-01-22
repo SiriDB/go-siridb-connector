@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/transceptor-technology/go-qpack"
+	qpack "github.com/transceptor-technology/go-qpack"
 )
 
 // Connection is a SiriDB Connection. Port should be the client port.
@@ -97,7 +97,7 @@ func (conn *Connection) Insert(data interface{}, timeout uint16) (interface{}, e
 	return conn.Send(CprotoReqInsert, data, timeout)
 }
 
-// Insert sends binary data to a SiriDB database.
+// InsertBin sends binary data to a SiriDB database.
 func (conn *Connection) InsertBin(data []byte, timeout uint16) (interface{}, error) {
 	return conn.SendBin(CprotoReqInsert, data, timeout)
 }
@@ -187,7 +187,7 @@ func (conn *Connection) Send(tp uint8, data interface{}, timeout uint16) (interf
 	return conn.getRespCh(pid, b, timeout)
 }
 
-// Send is used to send bytes
+// SendBin is used to send bytes
 func (conn *Connection) SendBin(tp uint8, data []byte, timeout uint16) (interface{}, error) {
 	pid := conn.increPid()
 	b, err := packBin(pid, tp, data)
